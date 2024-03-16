@@ -2,11 +2,11 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"log"
-	"net/http"
 	"os"
-	"time"
+	"sync"
+
+	"github.com/Tecu23/api-go/internal/data"
+	"github.com/Tecu23/api-go/internal/jsonlog"
 )
 
 const version = "1.0.0"
@@ -14,11 +14,18 @@ const version = "1.0.0"
 type config struct {
 	port int
 	env  string
+	db   struct {
+		maxOpenConns int
+		maxIdleConns int
+		maxIdleTime  string
+	}
 }
 
 type application struct {
 	config config
-	logger *log.Logger
+	logger *jsonlog.Logger
+	models data.Models
+	wg     sync.WaitGroup
 }
 
 func main() {
@@ -26,25 +33,20 @@ func main() {
 
 	flag.IntVar(&cfg.port, "port", 4000, "API server port")
 	flag.StringVar(&cfg.env, "env", "development", "Environment (development|staging|production)")
+
 	flag.Parse()
 
 	// Initialize a new logger which writes to std out, prefixed with curr date & tim
-	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
+	logger := jsonlog.New(os.Stdout, jsonlog.LevelInfo)
 
 	app := &application{
 		config: cfg,
 		logger: logger,
+		// models: data.NewModels(db),
 	}
 
-	srv := &http.Server{
-		Addr:         fmt.Sprintf(":%d", cfg.port),
-		Handler:      app.routes(),
-		IdleTimeout:  time.Minute,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 30 * time.Second,
+	err := app.serve()
+	if err != nil {
+		logger.PrintFatal(err, nil)
 	}
-
-	logger.Printf("starting %s server on %s", cfg.env, srv.Addr)
-	err := srv.ListenAndServe()
-	logger.Fatal(err)
 }
