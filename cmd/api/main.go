@@ -5,7 +5,6 @@ import (
 	"os"
 	"sync"
 
-	"github.com/Tecu23/api-go/internal/data"
 	"github.com/Tecu23/api-go/internal/jsonlog"
 )
 
@@ -24,7 +23,6 @@ type config struct {
 type application struct {
 	config config
 	logger *jsonlog.Logger
-	models data.Models
 	wg     sync.WaitGroup
 }
 
