@@ -2,7 +2,7 @@
 // versions:
 //   sqlc v1.25.0
 
-package exercises
+package models
 
 import (
 	"context"

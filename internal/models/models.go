@@ -2,13 +2,13 @@
 // versions:
 //   sqlc v1.25.0
 
-package exercises
+package models
 
 import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Exercise struct {
-	ID   pgtype.UUID
-	Name string
+	ID   pgtype.UUID `db:"id" json:"id"`
+	Name string      `db:"name" json:"name"`
 }

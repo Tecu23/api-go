@@ -3,7 +3,7 @@
 //   sqlc v1.25.0
 // source: exercises.sql
 
-package exercises
+package models
 
 import (
 	"context"
@@ -81,8 +81,8 @@ WHERE id = $1
 `
 
 type UpdateExerciseParams struct {
-	ID   pgtype.UUID
-	Name string
+	ID   pgtype.UUID `db:"id" json:"id"`
+	Name string      `db:"name" json:"name"`
 }
 
 func (q *Queries) UpdateExercise(ctx context.Context, arg UpdateExerciseParams) error {
